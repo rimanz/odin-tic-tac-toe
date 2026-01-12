@@ -1,9 +1,9 @@
 const game = (function () {
   const players = ["X", "O"];
-  const tiles = Array(9).fill("");
+  // const tiles = Array(9).fill("");
+  const tiles = ["X", "O", "O", "O", "O", "X", "X", "X", "O"];
   let xWasLast = false; // helps to determine the turn owner
   let gameWinner = determineWinner();
-  console.log(gameWinner);
 
   function getTileIndex(player) {
     const index = prompt(`Please select a tile for ${player}! (0 ~ 8)`);
@@ -33,7 +33,6 @@ const game = (function () {
         tiles[indices[0]] === tiles[indices[1]] &&
         tiles[indices[1]] === tiles[indices[2]]
       ) {
-        console.log(tiles[indices[0]]);
         winner = tiles[indices[0]];
       }
     });
@@ -50,7 +49,7 @@ const game = (function () {
   function playRound() {
     if (gameWinner) {
       console.log(`${gameWinner} has won the game!`);
-    } else {
+    } else if (tiles.some((tile) => tile === "")) {
       const turnOwner = xWasLast ? players[1] : players[0];
       console.log(turnOwner);
 
@@ -61,6 +60,8 @@ const game = (function () {
       winner = determineWinner();
 
       xWasLast = turnOwner === "X";
+    } else {
+      console.log("Draw!");
     }
   }
 
