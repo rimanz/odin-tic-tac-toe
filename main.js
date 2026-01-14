@@ -2,16 +2,10 @@ const gameBoard = (function () {
   const players = ["X", "O"];
   const tiles = Array(9).fill("");
   let xWasLast = false; // helps to determine the active player
-  let gameWinner = getWinner();
+  let gameWinner;
 
-  function getTileIndex(player) {
-    // Returns the tile's index selected by a player
-    const index = prompt(`Please select a tile for ${player}! (0 ~ 8)`);
-    if (tiles[index] === "") {
-      return index;
-    } else {
-      return getTileIndex(); // If the selected tile has already been taken
-    }
+  function getActivePlayer() {
+    return xWasLast ? players[1] : players[0];
   }
 
   function getWinner() {
@@ -40,12 +34,11 @@ const gameBoard = (function () {
     return winner;
   }
 
-  function playRound() {
+  function playRound(tileIndex) {
     if (gameWinner === undefined && tiles.some((tile) => tile === "")) {
-      const activePlayer = xWasLast ? players[1] : players[0];
+      const activePlayer = getActivePlayer();
 
-      const index = getTileIndex(activePlayer);
-      tiles[index] = activePlayer;
+      tiles[tileIndex] = activePlayer;
       console.log(tiles);
 
       gameWinner = getWinner();
@@ -60,5 +53,38 @@ const gameBoard = (function () {
     }
   }
 
-  return { playRound, gameWinner, getWinner, tiles };
+  return { tiles, getActivePlayer, playRound, getWinner };
 })();
+
+const interface = (function () {
+  const boardEl = document.getElementById("board");
+  const activePlayerEl = document.getElementById("active-player");
+  const tileNodes = document.querySelectorAll(".tile");
+  const messageBoxEl = document.getElementById("message-box");
+
+  boardEl.addEventListener("click", handleTileClick);
+
+  function handleTileClick(e) {
+    gameBoard.playRound(e.target.getAttribute("data-index"));
+    update();
+  }
+
+  function update() {
+    activePlayerEl.textContent = gameBoard.getActivePlayer();
+    tileNodes.forEach(
+      (el) => (el.textContent = gameBoard.tiles[el.getAttribute("data-index")])
+    );
+
+    if (gameBoard.getWinner()) {
+      messageBoxEl.textContent = `${gameBoard.getWinner()} Wins!`;
+    } else if (!gameBoard.tiles.some((tile) => tile === "")) {
+      messageBoxEl.textContent = "Draw!";
+    } else {
+      messageBoxEl.textContent = "";
+    }
+  }
+
+  return { update };
+})();
+
+interface.update();

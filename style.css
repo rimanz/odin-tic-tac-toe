@@ -1,0 +1,118 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 16px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 100vh;
+  text-align: center;
+  gap: 2rem;
+}
+
+header {
+  padding: 1.5rem 0;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 500;
+  text-align: left;
+  background-color: whitesmoke;
+  padding: 1.5rem 2.5rem;
+  border: 1px solid lightgray;
+  border-radius: 6px;
+  box-shadow: 1px 1px 5px silver;
+}
+
+#active-player {
+  display: inline-block;
+  font-weight: 600;
+  baseline-shift: calc(1rem * 0.5);
+  color: firebrick;
+  opacity: 0.8;
+  padding-left: 0.5rem;
+  scale: 1.75;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  background-color: black;
+  border: 5px solid;
+}
+
+.tile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 6rem;
+  width: 6rem;
+  font-size: 2.75rem;
+  font-weight: 500;
+  background-color: white;
+}
+
+.tile:hover {
+  background-color: whitesmoke;
+  cursor: pointer;
+}
+
+.tile:active {
+  background-color: white;
+}
+
+#message-box {
+  height: 2rem;
+  text-align: center;
+}
+
+#reset-btn {
+  color: black;
+  background-color: aliceblue;
+  font-size: 1.1rem;
+  font-weight: 600;
+  align-self: center;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  background-color: white;
+  color: firebrick;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 1px 2px 3px silver;
+  transition: all 0.2s ease;
+  margin-bottom: 0.5rem;
+}
+
+#reset-btn:hover {
+  background-color: white;
+  box-shadow: 1px 2px 6px 1px silver;
+  color: crimson;
+}
+
+#reset-btn:active {
+  box-shadow: 1px 2px 4px 1px silver inset;
+  scale: 0.99;
+}
+
+footer {
+  font-size: 0.8rem;
+  padding: 1rem 0;
+}
