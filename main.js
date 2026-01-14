@@ -1,20 +1,20 @@
-const game = (function () {
+const gameBoard = (function () {
   const players = ["X", "O"];
-  // const tiles = Array(9).fill("");
-  const tiles = ["X", "O", "O", "O", "O", "X", "X", "X", "O"];
-  let xWasLast = false; // helps to determine the turn owner
-  let gameWinner = determineWinner();
+  const tiles = Array(9).fill("");
+  let xWasLast = false; // helps to determine the active player
+  let gameWinner = getWinner();
 
   function getTileIndex(player) {
+    // Returns the tile's index selected by a player
     const index = prompt(`Please select a tile for ${player}! (0 ~ 8)`);
     if (tiles[index] === "") {
       return index;
     } else {
-      return getTileIndex();
+      return getTileIndex(); // If the selected tile has already been taken
     }
   }
 
-  function determineWinner() {
+  function getWinner() {
     let winner;
     const winningConditions = [
       [0, 1, 2],
@@ -40,30 +40,25 @@ const game = (function () {
     return winner;
   }
 
-  function printTiles() {
-    console.log(tiles.slice(0, 3));
-    console.log(tiles.slice(3, 6));
-    console.log(tiles.slice(6));
-  }
-
   function playRound() {
+    if (gameWinner === undefined && tiles.some((tile) => tile === "")) {
+      const activePlayer = xWasLast ? players[1] : players[0];
+
+      const index = getTileIndex(activePlayer);
+      tiles[index] = activePlayer;
+      console.log(tiles);
+
+      gameWinner = getWinner();
+      xWasLast = activePlayer === "X";
+    } else if (!gameWinner) {
+      gameWinner = null; // to prevent further rounds
+      console.log("Draw!");
+    }
+
     if (gameWinner) {
       console.log(`${gameWinner} has won the game!`);
-    } else if (tiles.some((tile) => tile === "")) {
-      const turnOwner = xWasLast ? players[1] : players[0];
-      console.log(turnOwner);
-
-      const index = getTileIndex(turnOwner);
-      tiles[index] = turnOwner;
-      printTiles();
-
-      winner = determineWinner();
-
-      xWasLast = turnOwner === "X";
-    } else {
-      console.log("Draw!");
     }
   }
 
-  return { playRound, gameWinner, printTiles };
+  return { playRound, gameWinner, getWinner, tiles };
 })();
