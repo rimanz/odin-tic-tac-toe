@@ -55,7 +55,13 @@ const gameBoard = (function () {
     }
   }
 
-  return { tiles, getActivePlayer, playRound, getWinner };
+  function resetGame() {
+    tiles.fill("");
+    xWasLast = false;
+    gameWinner = getWinner();
+  }
+
+  return { tiles, getActivePlayer, playRound, getWinner, resetGame };
 })();
 
 const interface = (function () {
@@ -63,13 +69,20 @@ const interface = (function () {
   const activePlayerEl = document.getElementById("active-player");
   const tileNodes = document.querySelectorAll(".tile");
   const messageBoxEl = document.getElementById("message-box");
+  const resetBtn = document.getElementById("reset-btn");
 
   boardEl.addEventListener("click", handleTileClick);
+  resetBtn.addEventListener("click", handleResetClick);
 
   function handleTileClick(e) {
     if (Array.from(e.target.classList).includes("tile")) {
       gameBoard.playRound(e.target.getAttribute("data-index"));
     }
+    update();
+  }
+
+  function handleResetClick() {
+    gameBoard.resetGame();
     update();
   }
 
