@@ -44,7 +44,7 @@ const gameBoard = (function () {
       gameWinner = getWinner();
       xWasLast = activePlayer === "X";
     } else if (!gameWinner) {
-      gameWinner = null; // to prevent further rounds
+      gameWinner = null; // to prevent further rounds after a draw
       console.log("Draw!");
     }
 
@@ -65,7 +65,9 @@ const interface = (function () {
   boardEl.addEventListener("click", handleTileClick);
 
   function handleTileClick(e) {
-    gameBoard.playRound(e.target.getAttribute("data-index"));
+    if (Array.from(e.target.classList).includes("tile")) {
+      gameBoard.playRound(e.target.getAttribute("data-index"));
+    }
     update();
   }
 
