@@ -36,13 +36,15 @@ const gameBoard = (function () {
 
   function playRound(tileIndex) {
     if (gameWinner === undefined && tiles.some((tile) => tile === "")) {
-      const activePlayer = getActivePlayer();
+      if (tiles[tileIndex] === "") {
+        const activePlayer = getActivePlayer();
 
-      tiles[tileIndex] = activePlayer;
-      console.log(tiles);
+        tiles[tileIndex] = activePlayer;
+        console.log(tiles);
 
-      gameWinner = getWinner();
-      xWasLast = activePlayer === "X";
+        gameWinner = getWinner();
+        xWasLast = activePlayer === "X";
+      }
     } else if (!gameWinner) {
       gameWinner = null; // to prevent further rounds after a draw
       console.log("Draw!");
