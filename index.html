@@ -12,9 +12,17 @@
     </header>
 
     <main>
+      <dialog id="result-modal">
+        <p>
+          <span id="winner"></span>
+          <span id="message"></span>
+        </p>
+        <button id="replay-btn">Play Again</button>
+      </dialog>
+
       <div>
         Active Player:
-        <span id="active-player"></span>
+        <span id="active-player" class="active-player"></span>
       </div>
 
       <div id="board">
@@ -28,8 +36,6 @@
         <div class="tile" data-index="7"></div>
         <div class="tile" data-index="8"></div>
       </div>
-
-      <div id="message-box">hello</div>
 
       <button id="reset-btn">Reset Game</button>
     </main>

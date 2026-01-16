@@ -40,10 +40,42 @@ main {
   box-shadow: 1px 1px 5px silver;
 }
 
-#active-player {
+dialog::backdrop {
+  background-color: black;
+  opacity: 0.5;
+}
+
+dialog {
+  top: calc(50vh - 6rem);
+  left: calc(50vw - 10rem);
+  height: 12rem;
+  width: 20rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  text-align: center;
+  background-color: whitesmoke;
+  color: black;
+  border: 1px solid gray;
+  border-radius: 6px;
+  box-shadow: 1px 1px 5px grey;
+  z-index: -1;
+}
+
+dialog p {
+  font-size: 2.25rem;
+  word-spacing: 0.75rem;
+}
+
+dialog #winner {
+  display: inline-block;
+  color: firebrick;
+  scale: 1.5;
+}
+
+.active-player {
   display: inline-block;
   font-weight: 600;
-  baseline-shift: calc(1rem * 0.5);
   color: firebrick;
   opacity: 0.8;
   padding-left: 0.5rem;
@@ -79,12 +111,7 @@ main {
   background-color: white;
 }
 
-#message-box {
-  height: 2rem;
-  text-align: center;
-}
-
-#reset-btn {
+button {
   color: black;
   background-color: aliceblue;
   font-size: 1.1rem;
@@ -101,13 +128,13 @@ main {
   margin-bottom: 0.5rem;
 }
 
-#reset-btn:hover {
+button:hover {
   background-color: white;
   box-shadow: 1px 2px 6px 1px silver;
   color: crimson;
 }
 
-#reset-btn:active {
+button:active {
   box-shadow: 1px 2px 4px 1px silver inset;
   scale: 0.99;
 }

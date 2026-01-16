@@ -68,11 +68,18 @@ const interface = (function () {
   const boardEl = document.getElementById("board");
   const activePlayerEl = document.getElementById("active-player");
   const tileNodes = document.querySelectorAll(".tile");
-  const messageBoxEl = document.getElementById("message-box");
   const resetBtn = document.getElementById("reset-btn");
+  const resultModal = document.getElementById("result-modal");
+  const winnerEl = document.getElementById("winner");
+  const messageEl = document.getElementById("message");
+  const replayBtn = document.getElementById("replay-btn");
 
   boardEl.addEventListener("click", handleTileClick);
   resetBtn.addEventListener("click", handleResetClick);
+  replayBtn.addEventListener("click", () => {
+    handleResetClick();
+    resultModal.close();
+  });
 
   function handleTileClick(e) {
     if (Array.from(e.target.classList).includes("tile")) {
@@ -93,15 +100,20 @@ const interface = (function () {
     );
 
     if (gameBoard.getWinner()) {
-      messageBoxEl.textContent = `${gameBoard.getWinner()} Wins!`;
+      winnerEl.textContent = gameBoard.getWinner();
+      messageEl.textContent = "wins!";
+      resultModal.showModal();
     } else if (!gameBoard.tiles.some((tile) => tile === "")) {
-      messageBoxEl.textContent = "Draw!";
+      winnerEl.textContent = "";
+      messageEl.textContent = "Draw!";
+      resultModal.showModal();
     } else {
-      messageBoxEl.textContent = "";
+      winnerEl.textContent = "";
+      messageEl.textContent = "";
     }
   }
 
-  return { update };
+  return { update, resultModal };
 })();
 
 interface.update();
