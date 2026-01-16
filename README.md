@@ -2,6 +2,8 @@
 
 A simple web-based Tic Tac Toe game built with HTML, CSS, and JavaScript as an assignment project for [The Odin Project](https://www.theodinproject.com/) curriculum.
 
+**Live Demo:** https://rimanz.github.io/odin-tic-tac-toe
+
 ## Features
 
 - Two-player game (X and O)
