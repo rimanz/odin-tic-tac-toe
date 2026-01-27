@@ -2,14 +2,15 @@ const gameBoard = (function () {
   const players = ["X", "O"];
   const tiles = Array(9).fill("");
   let xWasLast = false; // helps to determine the active player
-  let gameWinner;
+  let state = "playing"; // playing | win | draw
+  let winner;
 
-  function getActivePlayer() {
-    return xWasLast ? players[1] : players[0];
-  }
+  const getTiles = () => [...tiles];
+  const getActivePlayer = () => (xWasLast ? players[1] : players[0]);
+  const getWinner = () => winner;
+  const getState = () => state;
 
-  function getWinner() {
-    let winner;
+  function calculateWinner(board) {
     const winningConditions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -21,50 +22,52 @@ const gameBoard = (function () {
       [0, 4, 8],
     ];
 
-    winningConditions.forEach((indices) => {
+    for (const indices of winningConditions) {
       if (
-        tiles[indices[0]] !== "" &&
-        tiles[indices[0]] === tiles[indices[1]] &&
-        tiles[indices[1]] === tiles[indices[2]]
+        board[indices[0]] !== "" &&
+        board[indices[0]] === board[indices[1]] &&
+        board[indices[1]] === board[indices[2]]
       ) {
-        winner = tiles[indices[0]];
+        return board[indices[0]];
       }
-    });
-
-    return winner;
+    }
+    return;
   }
 
   function playRound(tileIndex) {
-    if (gameWinner === undefined && tiles.some((tile) => tile === "")) {
+    if (state === "playing") {
       if (tiles[tileIndex] === "") {
         const activePlayer = getActivePlayer();
-
         tiles[tileIndex] = activePlayer;
-        console.log(tiles);
-
-        gameWinner = getWinner();
         xWasLast = activePlayer === "X";
-      }
-    } else if (!gameWinner) {
-      gameWinner = null; // to prevent further rounds after a draw
-      console.log("Draw!");
-    }
+        winner = calculateWinner(tiles);
+        state = winner ? "win" : "playing";
 
-    if (gameWinner) {
-      console.log(`${gameWinner} has won the game!`);
+        if (!winner && !tiles.some((tile) => tile === "")) {
+          state = "draw";
+        }
+      }
     }
   }
 
-  function resetGame() {
+  function reset() {
     tiles.fill("");
     xWasLast = false;
-    gameWinner = getWinner();
+    winner = undefined;
+    state = "playing";
   }
 
-  return { tiles, getActivePlayer, playRound, getWinner, resetGame };
+  return {
+    getTiles,
+    getActivePlayer,
+    getState,
+    getWinner,
+    playRound,
+    reset,
+  };
 })();
 
-const interface = (function () {
+const displayController = (function () {
   const boardEl = document.getElementById("board");
   const activePlayerEl = document.getElementById("active-player");
   const tileNodes = document.querySelectorAll(".tile");
@@ -83,37 +86,35 @@ const interface = (function () {
 
   function handleTileClick(e) {
     if (Array.from(e.target.classList).includes("tile")) {
-      gameBoard.playRound(e.target.getAttribute("data-index"));
+      gameBoard.playRound(Number(e.target.dataset.index));
     }
     update();
   }
 
   function handleResetClick() {
-    gameBoard.resetGame();
+    gameBoard.reset();
     update();
   }
 
   function update() {
-    activePlayerEl.textContent = gameBoard.getActivePlayer();
-    tileNodes.forEach(
-      (el) => (el.textContent = gameBoard.tiles[el.getAttribute("data-index")])
-    );
+    const tiles = gameBoard.getTiles();
+    const state = gameBoard.getState();
 
-    if (gameBoard.getWinner()) {
+    activePlayerEl.textContent = gameBoard.getActivePlayer();
+    tileNodes.forEach((el) => (el.textContent = tiles[el.dataset.index]));
+
+    if (state === "win") {
       winnerEl.textContent = gameBoard.getWinner();
       messageEl.textContent = "wins!";
       resultModal.showModal();
-    } else if (!gameBoard.tiles.some((tile) => tile === "")) {
+    } else if (state === "draw") {
       winnerEl.textContent = "";
       messageEl.textContent = "Draw!";
       resultModal.showModal();
-    } else {
-      winnerEl.textContent = "";
-      messageEl.textContent = "";
     }
   }
 
   return { update, resultModal };
 })();
 
-interface.update();
+displayController.update();
