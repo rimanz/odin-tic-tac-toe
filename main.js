@@ -1,11 +1,20 @@
 const gameBoard = (function () {
-  const players = ["X", "O"];
   const tiles = Array(9).fill("");
+  const getTiles = () => [...tiles];
+  const clearTiles = () => tiles.fill("");
+  const isEmptyTile = (index) => tiles[index] === "";
+  const markTile = (index, marker) => (tiles[index] = marker);
+  const hasEmptyTiles = () => tiles.some((tile) => tile === "");
+
+  return { getTiles, clearTiles, isEmptyTile, markTile, hasEmptyTiles };
+})();
+
+const gameController = (function () {
+  const players = ["X", "O"];
   let xWasLast = false; // helps to determine the active player
   let state = "playing"; // playing | win | draw
   let winner;
 
-  const getTiles = () => [...tiles];
   const getActivePlayer = () => (xWasLast ? players[1] : players[0]);
   const getWinner = () => winner;
   const getState = () => state;
@@ -36,14 +45,14 @@ const gameBoard = (function () {
 
   function playRound(tileIndex) {
     if (state === "playing") {
-      if (tiles[tileIndex] === "") {
+      if (gameBoard.isEmptyTile(tileIndex)) {
         const activePlayer = getActivePlayer();
-        tiles[tileIndex] = activePlayer;
+        gameBoard.markTile(tileIndex, activePlayer);
         xWasLast = activePlayer === "X";
-        winner = calculateWinner(tiles);
+        winner = calculateWinner(gameBoard.getTiles());
         state = winner ? "win" : "playing";
 
-        if (!winner && !tiles.some((tile) => tile === "")) {
+        if (!winner && !gameBoard.hasEmptyTiles()) {
           state = "draw";
         }
       }
@@ -51,14 +60,13 @@ const gameBoard = (function () {
   }
 
   function reset() {
-    tiles.fill("");
+    gameBoard.clearTiles();
     xWasLast = false;
     winner = undefined;
     state = "playing";
   }
 
   return {
-    getTiles,
     getActivePlayer,
     getState,
     getWinner,
@@ -86,25 +94,25 @@ const displayController = (function () {
 
   function handleTileClick(e) {
     if (Array.from(e.target.classList).includes("tile")) {
-      gameBoard.playRound(Number(e.target.dataset.index));
+      gameController.playRound(Number(e.target.dataset.index));
     }
     update();
   }
 
   function handleResetClick() {
-    gameBoard.reset();
+    gameController.reset();
     update();
   }
 
   function update() {
     const tiles = gameBoard.getTiles();
-    const state = gameBoard.getState();
+    const state = gameController.getState();
 
-    activePlayerEl.textContent = gameBoard.getActivePlayer();
+    activePlayerEl.textContent = gameController.getActivePlayer();
     tileNodes.forEach((el) => (el.textContent = tiles[el.dataset.index]));
 
     if (state === "win") {
-      winnerEl.textContent = gameBoard.getWinner();
+      winnerEl.textContent = gameController.getWinner();
       messageEl.textContent = "wins!";
       resultModal.showModal();
     } else if (state === "draw") {
