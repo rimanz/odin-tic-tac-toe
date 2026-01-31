@@ -10,7 +10,9 @@ const gameBoard = (function () {
 })();
 
 const gameController = (function () {
-  const players = ["X", "O"];
+  const createPlayer = (symbol, name = "") => ({ name, symbol });
+
+  const players = [createPlayer("X"), createPlayer("O")];
   let xWasLast = false; // helps to determine the active player
   let state = "playing"; // playing | win | draw
   let winner;
@@ -18,6 +20,11 @@ const gameController = (function () {
   const getActivePlayer = () => (xWasLast ? players[1] : players[0]);
   const getWinner = () => winner;
   const getState = () => state;
+
+  function setPlayerNames(xName, oName) {
+    players[0].name = xName;
+    players[1].name = oName;
+  }
 
   function calculateWinner(board) {
     const winningConditions = [
@@ -37,7 +44,13 @@ const gameController = (function () {
         board[indices[0]] === board[indices[1]] &&
         board[indices[1]] === board[indices[2]]
       ) {
-        return board[indices[0]];
+        const winning_symbol = board[indices[0]];
+
+        for (const player of players) {
+          if (player.symbol === winning_symbol) {
+            return player;
+          }
+        }
       }
     }
     return;
@@ -47,11 +60,12 @@ const gameController = (function () {
     if (state === "playing") {
       if (gameBoard.isEmptyTile(tileIndex)) {
         const activePlayer = getActivePlayer();
-        gameBoard.markTile(tileIndex, activePlayer);
-        xWasLast = activePlayer === "X";
+        gameBoard.markTile(tileIndex, activePlayer.symbol);
+        xWasLast = activePlayer.symbol === "X";
         winner = calculateWinner(gameBoard.getTiles());
         state = winner ? "win" : "playing";
 
+        // Extra check for draw
         if (!winner && !gameBoard.hasEmptyTiles()) {
           state = "draw";
         }
@@ -67,6 +81,7 @@ const gameController = (function () {
   }
 
   return {
+    setPlayerNames,
     getActivePlayer,
     getState,
     getWinner,
@@ -76,21 +91,28 @@ const gameController = (function () {
 })();
 
 const displayController = (function () {
-  const boardEl = document.getElementById("board");
-  const activePlayerEl = document.getElementById("active-player");
+  const boardEl = document.querySelector("#board");
+  const activePlayerEl = document.querySelector("#active-player span");
   const tileNodes = document.querySelectorAll(".tile");
-  const resetBtn = document.getElementById("reset-btn");
-  const resultModal = document.getElementById("result-modal");
-  const winnerEl = document.getElementById("winner");
-  const messageEl = document.getElementById("message");
-  const replayBtn = document.getElementById("replay-btn");
+  const newBtn = document.querySelector("#new-btn");
+  const resetBtn = document.querySelector("#reset-btn");
+  const modal = document.querySelector("dialog");
+  const setupView = document.querySelector("#setup-view");
+  const setupForm = document.querySelector("#setup-view form");
+  const xName = document.querySelector("#x-name");
+  const oName = document.querySelector("#o-name");
+  const startBtn = document.querySelector("#start-btn");
+  const resultView = document.querySelector("#result-view");
+  const winnerEl = document.querySelector("#winner");
+  const messageEl = document.querySelector("#message");
+  const replayBtn = document.querySelector("#replay-btn");
 
   boardEl.addEventListener("click", handleTileClick);
+  setupForm.addEventListener("submit", (e) => handleGameInit(e));
   resetBtn.addEventListener("click", handleResetClick);
-  replayBtn.addEventListener("click", () => {
-    handleResetClick();
-    resultModal.close();
-  });
+  newBtn.addEventListener("click", handleNewClick);
+  // startBtn.addEventListener("click", handleGameInit);
+  replayBtn.addEventListener("click", handleNewClick);
 
   function handleTileClick(e) {
     if (Array.from(e.target.classList).includes("tile")) {
@@ -99,30 +121,68 @@ const displayController = (function () {
     update();
   }
 
+  function handleGameInit(e) {
+    e.preventDefault();
+    gameController.setPlayerNames(xName.value, oName.value);
+    modal.close();
+    update();
+  }
+
+  function handleNewClick() {
+    handleResetClick();
+    showSetupForm();
+  }
+
   function handleResetClick() {
     gameController.reset();
     update();
   }
 
+  function hide(el) {
+    el.style.display = "none";
+  }
+
+  function show(el) {
+    el.style.display = "flex";
+  }
+
+  function showSetupForm() {
+    hide(resultView);
+    show(setupView);
+    modal.showModal();
+  }
+
+  function showResult() {
+    hide(setupView);
+    show(resultView);
+    modal.showModal();
+  }
+
   function update() {
     const tiles = gameBoard.getTiles();
     const state = gameController.getState();
+    const activePlayer = gameController.getActivePlayer();
 
-    activePlayerEl.textContent = gameController.getActivePlayer();
+    activePlayerEl.textContent = activePlayer.name
+      ? activePlayer.name
+      : activePlayer.symbol;
     tileNodes.forEach((el) => (el.textContent = tiles[el.dataset.index]));
 
     if (state === "win") {
-      winnerEl.textContent = gameController.getWinner();
+      const winner = gameController.getWinner();
+      winnerEl.textContent = winner.name ? winner.name : winner.symbol;
       messageEl.textContent = "wins!";
-      resultModal.showModal();
+      showResult();
     } else if (state === "draw") {
       winnerEl.textContent = "";
       messageEl.textContent = "Draw!";
-      resultModal.showModal();
+      showResult();
     }
   }
 
-  return { update, resultModal };
+  // showSetupForm();
+
+  return { update, showSetupForm };
 })();
 
-displayController.update();
+displayController.showSetupForm();

@@ -13,17 +13,39 @@
     </header>
 
     <main>
-      <dialog id="result-modal">
-        <p>
-          <span id="winner"></span>
-          <span id="message"></span>
-        </p>
-        <button id="replay-btn">Play Again</button>
+      <!-- Modal -->
+      <dialog>
+        <!-- Setup View -->
+        <div class="modal-view" id="setup-view">
+          <form>
+            <p class="info">Setup Players (optional)</p>
+
+            <label>
+              Player Name [X]:
+              <input type="text" id="x-name" placeholder="John Doe" />
+            </label>
+
+            <label>
+              Player Name [O]:
+              <input type="text" id="o-name" placeholder="Jane Doe" />
+            </label>
+
+            <button type="submit" id="start-btn">Start Game</button>
+          </form>
+        </div>
+
+        <!-- Result View -->
+        <div class="modal-view" id="result-view">
+          <p id="winner"></p>
+          <p id="message"></p>
+          <button id="replay-btn">Play Again</button>
+        </div>
       </dialog>
 
-      <div>
+      <!-- Game Board -->
+      <div id="active-player" class="active-player">
         Active Player:
-        <span id="active-player" class="active-player"></span>
+        <span></span>
       </div>
 
       <div id="board">
@@ -38,10 +60,15 @@
         <div class="tile" data-index="8"></div>
       </div>
 
-      <button id="reset-btn">Reset Game</button>
+      <div class="buttons-wrapper">
+        <button id="new-btn">New Game</button>
+        <button id="reset-btn">Reset Game</button>
+      </div>
     </main>
 
-    <footer>Copyright &copy; 2026 Riman Das</footer>
+    <footer>
+      <p>Copyright &copy; 2026 Riman Das</p>
+    </footer>
 
     <script src="main.js"></script>
   </body>
